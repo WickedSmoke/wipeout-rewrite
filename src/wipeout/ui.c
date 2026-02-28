@@ -182,6 +182,25 @@ void ui_draw_number(int num, vec2i_t pos, ui_text_size_t size, rgba_t color) {
 	ui_draw_text(text_buffer + i, pos, size, color);
 }
 
+void ui_draw_float(float f, vec2i_t pos, ui_text_size_t size, rgba_t color) {
+	char text_buffer[10];
+	int i;
+	int num = (int) (f * 10.0f);
+
+	text_buffer[9] = '\0';
+	text_buffer[8] = '0' + (num % 10);
+	num = num / 10;
+	text_buffer[7] = 'f'; // "."
+
+	for (i = 6; i > 0; i--) {
+		text_buffer[i] = '0' + (num % 10);
+		num = num / 10;
+		if (num == 0)
+			break;
+	}
+	ui_draw_text(text_buffer + i, pos, size, color);
+}
+
 void ui_draw_text(const char *text, vec2i_t pos, ui_text_size_t size, rgba_t color) {
 	char_set_t *cs = &char_set[size];
 
