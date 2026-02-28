@@ -416,6 +416,9 @@ int main(int argc, char *argv[]) {
 		platform_prepare_frame();
 		system_update();
 		platform_end_frame();
+
+		// Update at 30 fps.  TODO: Calculate sleep based on loop time.
+		SDL_Delay(32);
 	}
 
 	system_cleanup();

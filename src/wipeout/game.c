@@ -610,8 +610,6 @@ void game_reset_championship(void) {
 }
 
 void game_update(void) {
-	double frame_start_time = platform_now();
-
 	int sh = render_size().y;
 	int scale = max(1, sh >=  720 ? sh / 360 : sh / 240);
 	if (save.ui_scale && save.ui_scale < scale) {
@@ -649,12 +647,6 @@ void game_update(void) {
 		save.is_dirty = false;
 		platform_store_userdata("save.dat", &save, sizeof(save_t));
 		printf("wrote save.dat\n");
-	}
-
-	double now = platform_now();
-	g.frame_time = now - frame_start_time;
-	if (g.frame_time > 0) {
-		g.frame_rate = ((double)g.frame_rate * 0.95) + (1.0/g.frame_time) * 0.05;
 	}
 }
 
