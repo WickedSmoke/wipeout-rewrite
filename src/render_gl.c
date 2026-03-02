@@ -10,7 +10,13 @@
 
 // Linux
 #elif defined(__unix__)
+#ifdef USE_GLEW
 	#include <GL/glew.h>
+#else
+	#define GL_GLEXT_PROTOTYPES
+	#include <GL/gl.h>
+	#include <GL/glext.h>
+#endif
 	
 // Windows
 #elif defined(WIN32)
@@ -390,7 +396,7 @@ void render_init(vec2i_t screen_size) {
 	#if defined(__APPLE__) && defined(__MACH__)
 		// OSX
 		// (nothing to do here)
-	#else
+	#elif defined(USE_GLEW)
 		// Windows, Linux
 		glewExperimental = GL_TRUE;
 		glewInit();

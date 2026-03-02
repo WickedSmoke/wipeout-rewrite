@@ -53,7 +53,7 @@ ifeq ($(UNAME_S), Darwin)
 
 else ifeq ($(UNAME_S), Linux)
 	ifeq ($(RENDERER), GL)
-		L_FLAGS := $(L_FLAGS) -lGLEW
+		L_FLAGS := $(L_FLAGS) #-lGLEW
 
 		# Prefer modern GLVND instead of legacy X11-only GLX
 		ifeq ($(USE_GLX), true)
