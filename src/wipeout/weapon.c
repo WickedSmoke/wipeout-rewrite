@@ -170,9 +170,9 @@ void weapons_update(void) {
 
 		// Handle projectiles
 		if (weapon->acceleration.x != 0 || weapon->acceleration.z != 0) {
-			weapon->velocity = vec3_add(weapon->velocity, vec3_mulf(weapon->acceleration, 30 * system_tick()));
-			weapon->velocity = vec3_sub(weapon->velocity, vec3_mulf(weapon->velocity, weapon->drag * 30 * system_tick()));
-			weapon->position = vec3_add(weapon->position, vec3_mulf(weapon->velocity, 30 * system_tick()));
+			weapon->velocity = vec3_add(weapon->velocity, vec3_mulf(weapon->acceleration, system_tick30(1.0)));
+			weapon->velocity = vec3_sub(weapon->velocity, vec3_mulf(weapon->velocity, system_tick30(weapon->drag)));
+			weapon->position = vec3_add(weapon->position, vec3_mulf(weapon->velocity, system_tick30(1.0)));
 
 			// Move along track normal
 			track_face_t *face = track_section_get_base_face(weapon->section);
@@ -181,14 +181,14 @@ void weapons_update(void) {
 			float height = vec3_distance_to_plane(weapon->position, face_point, face_normal);
 
 			if (height < 2000) {
-				weapon->position = vec3_add(weapon->position, vec3_mulf(face_normal, (200 - height) * 30 * system_tick()));
+				weapon->position = vec3_add(weapon->position, vec3_mulf(face_normal, system_tick30(200.0 - height)));
 			}
 
 			// Trail
 			if (weapon->trail_particle != PARTICLE_TYPE_NONE) {
 				weapon->trail_spawn_timer += system_tick();
 				while (weapon->trail_spawn_timer > 0) {
-					vec3_t pos = vec3_sub(weapon->position, vec3_mulf(weapon->velocity, 30 * system_tick() * weapon->trail_spawn_timer));
+					vec3_t pos = vec3_sub(weapon->position, vec3_mulf(weapon->velocity, system_tick30(weapon->trail_spawn_timer)));
 					vec3_t velocity = vec3(rand_float(-128, 128), rand_float(-128, 128), rand_float(-128, 128));
 					particles_spawn(pos, weapon->trail_particle, velocity, 128);
 					weapon->trail_spawn_timer -= WEAPON_PARTICLE_SPAWN_RATE;
@@ -251,14 +251,14 @@ void weapon_set_trajectory(weapon_t *self) {
 void weapon_follow_target(weapon_t *self) {
 	vec3_t angular_velocity = vec3(0, 0, 0);
 	if (self->target) {
-		vec3_t dir = vec3_mulf(vec3_sub(self->target->position, self->position), 0.125 * 30 * system_tick());
+		vec3_t dir = vec3_mulf(vec3_sub(self->target->position, self->position), system_tick30(0.125));
 		float height = sqrt(dir.x * dir.x + dir.z * dir.z);
 		angular_velocity.y = -atan2(dir.x, dir.z) - self->angle.y;
 		angular_velocity.x = -atan2(dir.y, height) - self->angle.x;
 	}
 
 	angular_velocity = vec3_wrap_angle(angular_velocity);
-	self->angle = vec3_add(self->angle, vec3_mulf(angular_velocity, 30 * system_tick() * 0.25));
+	self->angle = vec3_add(self->angle, vec3_mulf(angular_velocity, system_tick30(0.25)));
 	self->angle = vec3_wrap_angle(self->angle);
 
 	self->acceleration.x = -sin(self->angle.y) * cos(self->angle.x) * 256;

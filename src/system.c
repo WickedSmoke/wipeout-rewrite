@@ -9,7 +9,11 @@
 
 static double time_real;
 static double time_scaled;
+#ifdef LOCK_30_FPS
+static const double tick_last = 0.03333333333333333;
+#else
 static double tick_last;
+#endif
 static double cycle_time = 0;
 static double frame_t0;
 static unsigned int frame_count;
@@ -34,11 +38,14 @@ void system_exit(void) {
 	platform_exit();
 }
 
-void system_update(void) {
-	// Lock simulation rate for proper physics.
-	tick_last = 0.033333333;
+void system_update(double now) {
+#ifndef LOCK_30_FPS
+	double real_delta = now - time_real;
+	time_real = now;
+	tick_last = min(real_delta, 0.1);
+#endif
+
 	if ((++frame_count & 7) == 0) {
-		double now = platform_now();
 		g.frame_rate = 8.0 / (now - frame_t0);
 		frame_t0 = now;
 	}

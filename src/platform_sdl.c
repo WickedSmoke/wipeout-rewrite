@@ -411,14 +411,19 @@ int main(int argc, char *argv[]) {
 	platform_video_init();
 	system_init();
 
+	double time_start;
 	while (!wants_to_exit) {
+		time_start = platform_now();
 		platform_pump_events();
 		platform_prepare_frame();
-		system_update();
+		system_update(time_start);
 		platform_end_frame();
 
-		// Update at 30 fps.  TODO: Calculate sleep based on loop time.
-		SDL_Delay(32);
+#ifdef LOCK_30_FPS
+		int ms = 32 - (int) ((platform_now() - time_start) * 1000.0);
+		if (ms > 0)
+			SDL_Delay(ms);
+#endif
 	}
 
 	system_cleanup();

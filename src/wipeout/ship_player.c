@@ -345,7 +345,7 @@ void ship_player_update_race(ship_t *self) {
 		// Boost
 		if (flags_not(self->flags, SHIP_SPECIALED) && flags_is(face->flags, FACE_BOOST)) {
 			vec3_t track_direction = vec3_sub(self->section->next->center, self->section->center);
-			self->velocity = vec3_add(self->velocity, vec3_mulf(track_direction, 30 * system_tick()));
+			self->velocity = vec3_add(self->velocity, vec3_mulf(track_direction, system_tick30(1.0)));
 		}
 
 		vec3_t face_point = face->tris[0].vertices[0].pos;
@@ -359,10 +359,10 @@ void ship_player_update_race(ship_t *self) {
 			}
 			self->velocity = vec3_reflect(self->velocity, face->normal, 2);
 			self->velocity = vec3_sub(self->velocity, vec3_mulf(self->velocity, 0.125));
-			self->velocity = vec3_sub(self->velocity, vec3_mulf(face->normal, 64.0 * 30 * system_tick()));
+			self->velocity = vec3_sub(self->velocity, vec3_mulf(face->normal, system_tick30(64.0)));
 		}
 		else if (height < 30) {
-			self->velocity = vec3_add(self->velocity, vec3_mulf(face->normal, 64.0 * 30 * system_tick()));
+			self->velocity = vec3_add(self->velocity, vec3_mulf(face->normal, system_tick30(64.0)));
 		}
 
 		if (height < 50) {
@@ -442,8 +442,8 @@ void ship_player_update_race(ship_t *self) {
 	}
 
 	// Position
-	self->velocity = vec3_add(self->velocity, vec3_mulf(self->acceleration, 30 * system_tick()));
-	self->position = vec3_add(self->position, vec3_mulf(self->velocity, 0.015625 * 30 * system_tick()));
+	self->velocity = vec3_add(self->velocity, vec3_mulf(self->acceleration, system_tick30(1.0)));
+	self->position = vec3_add(self->position, vec3_mulf(self->velocity, system_tick30(0.015625)));
 
 	self->angular_acceleration.x -= self->angular_velocity.x * 0.25 * 30;
 	self->angular_acceleration.z += (self->angular_velocity.y - (0.5 * self->angular_velocity.z)) * 30;
@@ -462,10 +462,10 @@ void ship_player_update_race(ship_t *self) {
 	self->angular_velocity.y = clamp(self->angular_velocity.y, -self->turn_rate_max, self->turn_rate_max);
 	
 	float brake_dir = (self->brake_left - self->brake_right) * (0.125 / 4096.0);
-	self->angle.y += brake_dir * self->speed * 0.000030517578125 * M_PI * 2 * 30 * system_tick();
+	self->angle.y += brake_dir * self->speed * 0.000030517578125 * M_PI * system_tick30(2.0);
 
 	self->angle = vec3_add(self->angle, vec3_mulf(self->angular_velocity, system_tick()));
-	self->angle.z -= self->angle.z * 0.125 * 30 * system_tick();
+	self->angle.z -= self->angle.z * system_tick30(0.125);
 	self->angle = vec3_wrap_angle(self->angle);
 
 	// Prevent ship from going past the landing position of a SECTION_JUMP if going backwards.
@@ -491,11 +491,11 @@ void ship_player_update_rescue(ship_t *self) {
 		self->angle.y = wrap_angle(self->angle.y + self->angular_velocity.y * system_tick());
 	}
 
-	self->angle.x -= self->angle.x * 0.125 * 30 * system_tick(); // >> 3
-	self->angle.z -= self->angle.z * 0.03125 * 30 * system_tick(); // >> 5
+	self->angle.x -= self->angle.x * system_tick30(0.125); // >> 3
+	self->angle.z -= self->angle.z * system_tick30(0.03125); // >> 5
 
-	self->velocity = vec3_sub(self->velocity, vec3_mulf(self->velocity, 0.0625 * 30 * system_tick()));
-	self->position = vec3_add(self->position, vec3_mulf(self->velocity, 0.03125 * 30 * system_tick()));
+	self->velocity = vec3_sub(self->velocity, vec3_mulf(self->velocity, system_tick30(0.0625)));
+	self->position = vec3_add(self->position, vec3_mulf(self->velocity, system_tick30(0.03125)));
 
 
 	// Are we done being rescued?

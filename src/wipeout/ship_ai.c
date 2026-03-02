@@ -142,7 +142,7 @@ void ship_ai_update_race(ship_t *self) {
 		if (self == player) {
 			self->update_strat_func = ship_ai_strat_avoid_other;
 			if (self->remote_thrust_max > self->speed) {
-				self->speed += self->remote_thrust_mag * 30 * system_tick();
+				self->speed += system_tick30(self->remote_thrust_mag);
 			}
 		}
 		else {
@@ -157,7 +157,7 @@ void ship_ai_update_race(ship_t *self) {
 				self->update_timer = 0;
 				self->update_strat_func = ship_ai_strat_avoid;
 				if ((self->remote_thrust_max + 1200) > self->speed) {
-					self->speed += (self->remote_thrust_mag + 150) * 30 * system_tick();
+					self->speed += system_tick30(self->remote_thrust_mag + 150);
 				}
 			}
 
@@ -173,7 +173,7 @@ void ship_ai_update_race(ship_t *self) {
 				// it to make a challenge when the player fouls up
 
 				if (((self->remote_thrust_max + behind_speed) > self->speed)) {
-					self->speed += self->remote_thrust_mag * 30 * system_tick();
+					self->speed += system_tick30(self->remote_thrust_mag);
 				}
 			}
 
@@ -217,13 +217,13 @@ void ship_ai_update_race(ship_t *self) {
 				if (flags_is(self->flags, SHIP_OVERTAKEN)) {
 					// If ship has just overtaken, slow it down to a reasonable speed
 					if ((self->remote_thrust_max + behind_speed) > self->speed) {
-						self->speed += self->remote_thrust_mag * 30 * system_tick();
+						self->speed += system_tick30(self->remote_thrust_mag);
 					}
 				}
 				else {
 					// Increase the speed of any craft just in front slightly
 					if (((self->remote_thrust_max + (behind_speed >> 1)) > self->speed)) {
-						self->speed += self->remote_thrust_mag * 30 * system_tick();
+						self->speed += system_tick30(self->remote_thrust_mag);
 					}
 				}
 
@@ -299,12 +299,12 @@ void ship_ai_update_race(ship_t *self) {
 
 				if (flags_is(self->flags, SHIP_OVERTAKEN)) {
 					if ((self->remote_thrust_max + 700) > self->speed) {
-						self->speed += self->remote_thrust_mag * 2 * 30 * system_tick();
+						self->speed += self->remote_thrust_mag * system_tick30(2.0);
 					}
 				}
 				else {
 					if (((self->remote_thrust_max + behind_speed) > self->speed)) {
-						self->speed += self->remote_thrust_mag * 30 * system_tick();
+						self->speed += system_tick30(self->remote_thrust_mag);
 					}
 				}
 			}
@@ -314,7 +314,7 @@ void ship_ai_update_race(ship_t *self) {
 			// give the weaker player a chance to catch up
 			
 			else if (section_diff > (NUM_PILOTS - self->position_rank) * 15 && section_diff < 150) {
-				self->speed += self->remote_thrust_mag * 0.5 * 30 * system_tick();
+				self->speed += self->remote_thrust_mag * system_tick30(0.5);
 				if (self->speed > self->remote_thrust_max * 0.5) {
 					self->speed = self->remote_thrust_max * 0.5;
 				}
@@ -331,7 +331,7 @@ void ship_ai_update_race(ship_t *self) {
 				self->update_strat_func = ship_ai_strat_avoid;
 
 				if ((self->remote_thrust_max > self->speed)) {
-					self->speed += self->remote_thrust_mag * 30 * system_tick();
+					self->speed += system_tick30(self->remote_thrust_mag);
 				}
 			}
 
@@ -355,7 +355,7 @@ void ship_ai_update_race(ship_t *self) {
 				self->update_timer -= system_tick();
 
 				if ((self->remote_thrust_max > self->speed)) {
-					self->speed += self->remote_thrust_mag * 30 * system_tick();
+					self->speed += system_tick30(self->remote_thrust_mag);
 				}
 			} // End of DPA control options
 
@@ -366,7 +366,7 @@ void ship_ai_update_race(ship_t *self) {
 				self->update_timer = 0;
 				self->update_strat_func = ship_ai_strat_hold_center;
 				if ((self->remote_thrust_max > self->speed)) {
-					self->speed += self->remote_thrust_mag * 30 * system_tick();
+					self->speed += system_tick30(self->remote_thrust_mag);
 				}
 			}
 		}
@@ -433,11 +433,11 @@ void ship_ai_update_race(ship_t *self) {
 
 		// If remote has gone over boost
 		if (flags_is(face->flags, FACE_BOOST) && (self->update_strat_func == ship_ai_strat_hold_left || self->update_strat_func == ship_ai_strat_hold_center)) {
-			self->speed += 200 * 30 * system_tick();
+			self->speed += system_tick30(200.0);
 		}
 		face++;
 		if (flags_is(face->flags, FACE_BOOST) && (self->update_strat_func == ship_ai_strat_hold_right || self->update_strat_func == ship_ai_strat_hold_center)) {
-			self->speed += 200 * 30 * system_tick();
+			self->speed += system_tick30(200.0);
 		}
 
 		vec3_t track_target;
@@ -469,7 +469,7 @@ void ship_ai_update_race(ship_t *self) {
 			vec3_mulf(face->normal, (SHIP_TRACK_FLOAT * SHIP_TRACK_MAGNET) / height),
 			vec3_mulf(face->normal, SHIP_TRACK_MAGNET)
 		), 16.0));
-		self->velocity = vec3_add(self->velocity, vec3_mulf(self->acceleration, 30 * system_tick()));
+		self->velocity = vec3_add(self->velocity, vec3_mulf(self->acceleration, system_tick30(1.0)));
 
 
 		float xy_dist = sqrt(track_target.x * track_target.x + track_target.z * track_target.z);
@@ -507,22 +507,22 @@ void ship_ai_update_race(ship_t *self) {
 			track_target.y,
 			(track_target.z + ((best_path.z - self->position.z) * 0.5))
 		);
-		self->velocity = vec3_add(self->velocity, vec3_mulf(self->acceleration, 30 * system_tick()));
+		self->velocity = vec3_add(self->velocity, vec3_mulf(self->acceleration, system_tick30(1.0)));
 
 		self->angular_velocity.x = -0.3 - self->angle.x * 30;
 		self->angular_velocity.y = wrap_angle(-atan2(track_target.x, track_target.z) - self->angle.y) * (1.0/16.0) * 30;
 	}
 
 	
-	self->angular_velocity.z += (self->angular_velocity.y * 2.0 - self->angular_velocity.z * 0.5) * 30 * system_tick();
-	self->turn_rate_from_hit -= self->turn_rate_from_hit * 0.125 * 30 * system_tick();
+	self->angular_velocity.z += system_tick30(self->angular_velocity.y * 2.0 - self->angular_velocity.z * 0.5);
+	self->turn_rate_from_hit -= self->turn_rate_from_hit * system_tick30(0.125);
 
 	self->angle = vec3_add(self->angle, vec3_mulf(self->angular_velocity, system_tick()));
-	self->angle.z -= self->angle.z * 0.125 * 30 * system_tick();
+	self->angle.z -= self->angle.z * system_tick30(0.125);
 	self->angle = vec3_wrap_angle(self->angle);
 
-	self->velocity = vec3_sub(self->velocity, vec3_mulf(self->velocity, 0.125 * 30 * system_tick()));
-	self->position = vec3_add(self->position, vec3_mulf(self->velocity, 0.015625 * 30 * system_tick()));
+	self->velocity = vec3_sub(self->velocity, vec3_mulf(self->velocity, system_tick30(0.125)));
+	self->position = vec3_add(self->position, vec3_mulf(self->velocity, system_tick30(0.015625)));
 
 	if (flags_is(self->flags, SHIP_ELECTROED)) {
 		self->ebolt_effect_timer += system_tick();

@@ -116,9 +116,9 @@ void droid_draw(droid_t *droid) {
 void droid_update(droid_t *droid, ship_t *ship) {
 	(droid->update_func)(droid, ship);
 
-	droid->velocity = vec3_add(droid->velocity, vec3_mulf(droid->acceleration, 30 * system_tick()));
-	droid->velocity = vec3_sub(droid->velocity, vec3_mulf(droid->velocity, 0.125 * 30 * system_tick()));
-	droid->position = vec3_add(droid->position, vec3_mulf(droid->velocity, 0.015625 * 30 * system_tick()));
+	droid->velocity = vec3_add(droid->velocity, vec3_mulf(droid->acceleration, system_tick30(1.0)));
+	droid->velocity = vec3_sub(droid->velocity, vec3_mulf(droid->velocity, system_tick30(0.125)));
+	droid->position = vec3_add(droid->position, vec3_mulf(droid->velocity, system_tick30(0.015625)));
 	droid->angle = vec3_add(droid->angle, vec3_mulf(droid->angular_velocity, system_tick()));
 	droid->angle = vec3_wrap_angle(droid->angle);
 	
@@ -145,7 +145,7 @@ void droid_update_intro(droid_t *droid, ship_t *ship) {
 	}
 
 	else if (droid->update_timer < DROID_UPDATE_TIME_INTRO_1) {
-		droid->acceleration.y -= 90 * system_tick();
+		droid->acceleration.y -= system_tick30(3.0);
 		droid->angular_velocity.y = (8.0 / 4096.0) * M_PI * 2 * 30;
 	}
 

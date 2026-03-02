@@ -52,8 +52,8 @@ void camera_update_race_external(camera_t *camera, ship_t *ship, droid_t *droid)
 	vec3_t acc = diff_from_center;
 	acc.y += vec3_len(diff_from_center) * 0.5;
 	
-	camera->velocity = vec3_sub(camera->velocity, vec3_mulf(acc, 0.015625 * 30 * system_tick()));
-	camera->velocity = vec3_sub(camera->velocity, vec3_mulf(camera->velocity, 0.125 * 30 * system_tick()));
+	camera->velocity = vec3_sub(camera->velocity, vec3_mulf(acc, system_tick30(0.015625)));
+	camera->velocity = vec3_sub(camera->velocity, vec3_mulf(camera->velocity, system_tick30(0.125)));
 	pos = vec3_add(pos, camera->velocity);
 
 	camera->position = pos;

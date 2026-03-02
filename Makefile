@@ -4,7 +4,7 @@ UNAME_S := $(shell uname -s)
 RENDERER ?= GL
 USE_GLX ?= false
 DEBUG ?= false
-USER_CFLAGS ?=
+USER_CFLAGS ?= -DLOCK_30_FPS
 
 L_FLAGS ?= -lm
 C_FLAGS ?= -Isrc/libs/ -std=gnu99 -Wall -Wno-unused-variable $(USER_CFLAGS)

@@ -8,7 +8,7 @@
 #define SYSTEM_WINDOW_HEIGHT 720
 
 void system_init(void);
-void system_update(void);
+void system_update(double now);
 void system_cleanup(void);
 void system_exit(void);
 void system_resize(vec2i_t size);
@@ -19,5 +19,11 @@ double system_cycle_time(void);
 void system_reset_cycle_time(void);
 double system_time_scale_get(void);
 void system_time_scale_set(double ts);
+
+#ifdef LOCK_30_FPS
+#define system_tick30(n)    n
+#else
+#define system_tick30(n)    ((n) * 30.0 * system_tick())
+#endif
 
 #endif
